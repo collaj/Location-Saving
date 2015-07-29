@@ -1,0 +1,19 @@
+name: Location Saving
+main: main.Main
+version: 1.0
+commands:
+    savePOI:
+        description: Saves a location that can be recalled later.
+        usage: /<command> <name>
+    getPOI:
+        description: Gets the coordinates of a saved location.
+        usage: /<command> <name>
+    getAllLocations:
+        description: Lists all of the locations that are being saved.
+        usage: /<command>
+    getClosestPOI:
+        description: Gets the POI location that is closest to your current location
+        usage: /<command>
+    removePOI:
+        description: Removes a saved location.
+        usage: /<command> <name>
