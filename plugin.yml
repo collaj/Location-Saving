@@ -8,7 +8,7 @@ commands:
     getPOI:
         description: Gets the coordinates of a saved location.
         usage: /<command> <name>
-    getAllLocations:
+    getAllPOI:
         description: Lists all of the locations that are being saved.
         usage: /<command>
     getClosestPOI:
