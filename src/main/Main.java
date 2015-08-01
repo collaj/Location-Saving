@@ -24,7 +24,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
 		
 		getCommand("savePOI").setExecutor(this);
 		getCommand("getPOI").setExecutor(this);
-		getCommand("getAllLocations").setExecutor(this);
+		getCommand("getAllPOI").setExecutor(this);
 		getCommand("getClosestPOI").setExecutor(this);
 		getCommand("removePOI").setExecutor(this);
 	}
@@ -84,7 +84,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
 			
 			return true;
 		}
-		else if (cmd.getName().equalsIgnoreCase("getAllLocations")) {
+		else if (cmd.getName().equalsIgnoreCase("getAllPOI")) {
 			Set<String> locations = config.getConfigurationSection("places").getKeys(false);
 			player.sendMessage(ChatColor.GREEN + "Locations: " + locations.size());
 			for (String s : locations) {
