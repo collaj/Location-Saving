@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -61,7 +62,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
 			config.set(path + ".Z", location.getBlockZ());
 			saveConfig();
 			
-			player.sendMessage(ChatColor.GREEN + "Location saved.");
+			Bukkit.broadcastMessage(ChatColor.GREEN + "New location " + ChatColor.DARK_PURPLE + args[0] + ChatColor.GREEN + " has been saved.");
 			return true;
 		}
 		else if (cmd.getName().equalsIgnoreCase("getPOI")) {
