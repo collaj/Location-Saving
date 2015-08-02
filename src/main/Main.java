@@ -7,6 +7,7 @@ import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World.Environment;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -41,6 +42,19 @@ public class Main extends JavaPlugin implements CommandExecutor {
 		else
 			return false;
 		
+		Environment env = player.getWorld().getEnvironment();
+		String environment = null;
+		switch (env) {
+		case NETHER:
+			environment = "nether";
+			break;
+		case THE_END:
+			environment = "end";
+			break;
+		default:
+			environment = "overworld";
+		}
+		
 		
 		if(cmd.getName().equalsIgnoreCase("savePOI")) {
 			if (args.length != 1) {
@@ -48,12 +62,12 @@ public class Main extends JavaPlugin implements CommandExecutor {
 				return false;
 			}
 			
-			if (config.contains("places." + args[0].toLowerCase())) {
+			if (config.contains(environment + "." + args[0].toLowerCase())) {
 				player.sendMessage(ChatColor.RED + "location name already exists, please choose a different name.");
 				return false;
 			}
 			
-			String path = "places." + args[0].toLowerCase();
+			String path = environment + "." + args[0].toLowerCase();
 			Location location = player.getLocation();
 			
 			config.createSection(path);
@@ -62,7 +76,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
 			config.set(path + ".Z", location.getBlockZ());
 			saveConfig();
 			
-			Bukkit.broadcastMessage(ChatColor.GREEN + "New location " + ChatColor.DARK_PURPLE + args[0] + ChatColor.GREEN + " has been saved.");
+			Bukkit.broadcastMessage(ChatColor.GREEN + "New location, " + ChatColor.DARK_PURPLE + args[0] + ChatColor.GREEN + ", has been saved for the " + ChatColor.DARK_PURPLE + environment);
 			return true;
 		}
 		else if (cmd.getName().equalsIgnoreCase("getPOI")) {
@@ -71,12 +85,12 @@ public class Main extends JavaPlugin implements CommandExecutor {
 				return false;
 			}
 			
-			if (!config.contains("places." + args[0].toLowerCase())) {
+			String path = environment + "." + args[0].toLowerCase();
+			if (!config.contains(path)) {
 				player.sendMessage(ChatColor.RED + "this location has not been saved.");
 				return false;
 			}
 			
-			String path = "places." + args[0].toLowerCase();
 			player.sendMessage(ChatColor.GREEN + "Location: " + args[0]);
 			player.sendMessage(ChatColor.DARK_PURPLE + "X: " + config.getInt(path + ".X"));
 			player.sendMessage(ChatColor.DARK_PURPLE + "Y: " + config.getInt(path + ".Y"));
@@ -85,7 +99,11 @@ public class Main extends JavaPlugin implements CommandExecutor {
 			return true;
 		}
 		else if (cmd.getName().equalsIgnoreCase("getAllPOI")) {
-			Set<String> locations = config.getConfigurationSection("places").getKeys(false);
+			if (!config.contains(environment)) {
+				player.sendMessage(ChatColor.GREEN + "Locations: 0");
+				return true;
+			}
+			Set<String> locations = config.getConfigurationSection(environment).getKeys(false);
 			player.sendMessage(ChatColor.GREEN + "Locations: " + locations.size());
 			for (String s : locations) {
 				player.sendMessage(ChatColor.DARK_PURPLE + s);
@@ -94,7 +112,7 @@ public class Main extends JavaPlugin implements CommandExecutor {
 		}
 		else if (cmd.getName().equalsIgnoreCase("getClosestPOI")) {
 			Location playerLocation = player.getLocation();
-			Set<String> locations = config.getConfigurationSection("places").getKeys(false);
+			Set<String> locations = config.getConfigurationSection(environment).getKeys(false);
 			
 			if (locations.isEmpty()) {
 				player.sendMessage(ChatColor.RED + "There are no saved locations.");
@@ -105,9 +123,9 @@ public class Main extends JavaPlugin implements CommandExecutor {
 			
 			for (String place : locations) {
 				distances.put(place, playerLocation.distance(new Location(player.getWorld(), 
-																		  config.getInt("places." + place + ".X"), 
-																		  config.getInt("places." + place + ".Y"), 
-																		  config.getInt("places." + place + ".Z"))));
+																		  config.getInt(environment + "." + place + ".X"), 
+																		  config.getInt(environment + "." + place + ".Y"), 
+																		  config.getInt(environment + "." + place + ".Z"))));
 			}
 			
 			Iterator<String> iterator = distances.keySet().iterator();
@@ -124,9 +142,9 @@ public class Main extends JavaPlugin implements CommandExecutor {
 			
 			player.sendMessage(ChatColor.GREEN + "Location: " + shortestLocation);
 			player.sendMessage(ChatColor.DARK_PURPLE + "Distance: " + shortestDistance);
-			player.sendMessage(ChatColor.DARK_PURPLE + "X: " + config.getInt("places." + shortestLocation + ".X"));
-			player.sendMessage(ChatColor.DARK_PURPLE + "Y: " + config.getInt("places." + shortestLocation + ".Y"));
-			player.sendMessage(ChatColor.DARK_PURPLE + "Z: " + config.getInt("places." + shortestLocation + ".Z"));
+			player.sendMessage(ChatColor.DARK_PURPLE + "X: " + config.getInt(environment + "." + shortestLocation + ".X"));
+			player.sendMessage(ChatColor.DARK_PURPLE + "Y: " + config.getInt(environment + "." + shortestLocation + ".Y"));
+			player.sendMessage(ChatColor.DARK_PURPLE + "Z: " + config.getInt(environment + "." + shortestLocation + ".Z"));
 			return true;
 		}
 		else if (cmd.getName().equalsIgnoreCase("removePOI")) {
@@ -135,12 +153,12 @@ public class Main extends JavaPlugin implements CommandExecutor {
 				return false;
 			}
 			
-			if (!config.contains("places." + args[0].toLowerCase())) {
+			if (!config.contains(environment + "." + args[0].toLowerCase())) {
 				player.sendMessage(ChatColor.RED + "location is not in the records.");
 				return false;
 			}
 			
-			config.getConfigurationSection("places").set(args[0].toLowerCase(), null);
+			config.getConfigurationSection(environment).set(args[0].toLowerCase(), null);
 			saveConfig();
 			player.sendMessage(ChatColor.GREEN + "The location has been removed.");
 			return true;
